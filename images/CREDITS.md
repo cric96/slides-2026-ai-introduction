@@ -18,3 +18,10 @@ All images from Wikimedia Commons. Resized (long side <= 2000 px) and converted 
 | library.jpg | Long Room, Trinity College Dublin | https://commons.wikimedia.org/wiki/File:Long_Room_Interior,_Trinity_College_Dublin,_Ireland_-_Diliff.jpg | Diliff | CC BY-SA 4.0 |
 | student.jpg | Students studying, Sias University library | https://commons.wikimedia.org/wiki/File:Sias_Library_-_Students_Studying_2017.jpg | Gary Todd | CC0 |
 | brain.jpg | GFP-labelled neurons (fluorescence) | https://commons.wikimedia.org/wiki/File:GFP_Neurons.png | ManuelSchottdorf | CC BY-SA 4.0 |
+| neuron-cajal.jpg | Purkinje cells, drawing by Santiago Ramón y Cajal (1899) | https://commons.wikimedia.org/wiki/File:PurkinjeCell.jpg | Santiago Ramón y Cajal | Public domain |
+| animal-fly.jpg | Drosophila melanogaster (cropped) | https://commons.wikimedia.org/wiki/File:Drosophila_melanogaster_-_side_(aka).jpg | André Karwath | CC BY-SA 2.5 |
+| animal-bee.jpg | Apis mellifera (cropped) | https://commons.wikimedia.org/wiki/File:Apis_mellifera_Western_honey_bee.jpg | Andreas Trepte | CC BY-SA 2.5 |
+| animal-mouse.jpg | House mouse (cropped) | https://commons.wikimedia.org/wiki/File:House_mouse_(Mus_musculus)_2732.jpg | Ahunt | CC0 |
+| animal-cat.jpg | Cat (cropped) | https://commons.wikimedia.org/wiki/File:Cat_November_2010-1a.jpg | Alvesgaspar | CC BY-SA 3.0 |
+| animal-human.jpg | Vitruvian Man, Leonardo da Vinci (cropped) | https://commons.wikimedia.org/wiki/File:Da_Vinci_Vitruve_Luc_Viatour.jpg | Leonardo da Vinci (photo Luc Viatour) | Public domain |
+| cnn-*.jpg | GoogLeNet feature visualizations (tiles from sprite_hero.png; cnn-pixel is a pixelated cnn-objects) | https://distill.pub/2017/feature-visualization/ | Olah, Mordvintsev, Schubert (Distill) | CC BY 4.0 |

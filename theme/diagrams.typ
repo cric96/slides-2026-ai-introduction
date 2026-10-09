@@ -114,7 +114,7 @@
   let c = accent.get()
   set text(size: size)
   let n = inputs.len()
-  let w = 13em
+  let w = 15.9em
   let h = 7.5em
   let in-x = 4.2em
   let sum = (8.2em, h / 2)
@@ -127,7 +127,7 @@
         end: (sum.at(0) - r, sum.at(1)),
         stroke: (paint: c, thickness: 0.8pt + 3pt * wt, cap: "round"),
       ))
-      place(top + left, dx: 0em, dy: y - 0.6em, box(width: in-x - 0.5em, align(right, text(size: 0.8em, label))))
+      place(top + left, dx: 0em, dy: y - 1em, box(width: in-x - 0.5em, height: 2em, align(right + horizon, text(size: 0.8em, label))))
       let mx = in-x + (sum.at(0) - r - in-x) * 0.22
       let my = y + (sum.at(1) - y) * 0.22
       place(top + left, dx: mx - 0.9em, dy: my - 1.05em, box(
@@ -139,12 +139,11 @@
       radius: r, fill: c,
       align(center + horizon, text(font: fonts.display, weight: "bold", fill: white, size: 1.1em, $Sigma$)),
     ))
-    place(top + left, line(
-      start: (sum.at(0) + r, sum.at(1)),
-      end: (sum.at(0) + r + 1.4em, sum.at(1)),
-      stroke: 2.5pt + palette.ink,
-    ))
-    place(top + left, dx: sum.at(0) + r + 1.5em, dy: sum.at(1) - 0.65em, text(font: fonts.display, weight: "bold", output))
+    // output arrow, label centred on it
+    let (ox, oy) = (sum.at(0) + r + 0.25em, sum.at(1))
+    place(top + left, line(start: (ox, oy), end: (ox + 1.1em, oy), stroke: (paint: palette.ink, thickness: 2.5pt, cap: "round")))
+    place(top + left, polygon(fill: palette.ink, (ox + 1em, oy - 0.3em), (ox + 1.45em, oy), (ox + 1em, oy + 0.3em)))
+    place(top + left, dx: ox + 1.7em, dy: oy - 1em, box(height: 2em, align(horizon, text(font: fonts.display, weight: "bold", output))))
   })
 }
 
@@ -169,6 +168,58 @@
         let (x, y) = pos(l, i)
         let col = if l == 0 { palette.muted } else if l == L - 1 { palette.coral } else { c }
         place(top + left, dx: x - r, dy: y - r, circle(radius: r, fill: col, stroke: 1.5pt + palette.paper))
+      }
+    }
+  })
+}
+
+/// A layered network drawn big: few large neurons, connections with varied
+/// (deterministic pseudo-random) strength, so it reads as "learned weights".
+/// `outputs`: optional array of (label, active) for the last layer, labelled at its right.
+#let deep-network(layers, width: 20em, height: 6em, r: 0.55em, outputs: none) = context {
+  let c = accent.get()
+  let L = layers.len()
+  let pos(l, i) = {
+    let n = layers.at(l)
+    (width * (l + 0.5) / L, height * (i + 0.5) / n)
+  }
+  // weight in [0, 1], stable across compiles
+  let weight(l, i, j) = calc.rem(l * 53 + i * 31 + j * 17 + i * j * 7, 23) / 22
+  block(width: width, height: height, {
+    for l in range(L - 1) {
+      for i in range(layers.at(l)) {
+        for j in range(layers.at(l + 1)) {
+          let w = weight(l, i, j)
+          let w = w * w
+          place(top + left, line(
+            start: pos(l, i),
+            end: pos(l + 1, j),
+            stroke: (paint: c.transparentize(88% - 70% * w), thickness: 0.6pt + 4.4pt * w, cap: "round"),
+          ))
+        }
+      }
+    }
+    for l in range(L) {
+      for i in range(layers.at(l)) {
+        let (x, y) = pos(l, i)
+        let last = l == L - 1
+        let on = not last or outputs == none or outputs.at(i).at(1)
+        let col = if l == 0 { palette.muted } else if last { if on { palette.coral } else { palette.paper } } else { c }
+        let rr = if last { r * 1.35 } else { r }
+        if last and on {
+          place(top + left, dx: x - rr * 1.6, dy: y - rr * 1.6, circle(radius: rr * 1.6, fill: palette.coral.transparentize(82%)))
+        }
+        place(top + left, dx: x - rr, dy: y - rr, circle(
+          radius: rr, fill: col,
+          stroke: if last and not on { 2.5pt + palette.muted } else { 3pt + palette.paper },
+        ))
+        if last and outputs != none {
+          place(top + left, dx: x + rr * 1.9, dy: y - 0.6em, text(
+            font: fonts.display, weight: "bold", size: 1em,
+            fill: if on { palette.coral } else { palette.muted },
+            outputs.at(i).at(0),
+          ))
+        }
       }
     }
   })
@@ -297,5 +348,136 @@
       align: top + left,
       ..steps.enumerate().map(((i, (_, below))) => pad(left: if i == 0 { 0.7em } else { notch + 0.3em }, right: notch, if below == none { [] } else { below })),
     )
+  })
+}
+
+/// Horizontal bars on a linear scale. `rows`: array of (label, sub, value, value-label, color).
+#let bars(rows, max: auto, label-width: 7em, bar-height: 0.9em) = context {
+  let m = if max == auto { calc.max(..rows.map(r => r.at(2))) } else { max }
+  layout(sz => {
+    let full = (sz.width - label-width - 6.5em).to-absolute()
+    grid(
+      columns: (label-width, 1fr),
+      column-gutter: 0.6em,
+      row-gutter: 0.55em,
+      align: (right + horizon, left + horizon),
+      ..rows.map(((label, sub, v, vl, col)) => (
+        {
+          text(font: fonts.display, weight: "bold", size: 0.8em, label)
+          if sub != none { linebreak(); text(font: fonts.mono, size: 0.5em, fill: palette.muted, sub) }
+        },
+        stack(dir: ltr, spacing: 0.4em,
+          box(width: calc.max((full * v / m).to-absolute(), 3pt), height: bar-height, fill: col),
+          box(height: bar-height, align(horizon, text(font: fonts.mono, size: 0.62em, weight: "bold", fill: col, vl))),
+        ),
+      )).flatten(),
+    )
+  })
+}
+
+/// Logarithmic scale with items above and below the axis.
+/// `above` / `below`: arrays of (value, icon-or-none, label, value-label).
+#let log-scale(above, below, from: 7, to: 14, height: 8.6em, show-bottom: true, unit: none) = context {
+  let c = accent.get()
+  layout(sz => {
+    let w = sz.width
+    let pad = 2.2em
+    let x(v) = pad + (w - 2 * pad) * (calc.log(v) - from) / (to - from)
+    let axis-y = height * 0.52
+    block(width: w, height: height, {
+      place(top + left, dy: axis-y, line(start: (pad - 1em, 0pt), end: (w - pad + 1em, 0pt), stroke: 2pt + palette.line))
+      place(top + left, dx: w - pad + 0.9em, dy: axis-y - 0.3em, polygon(fill: palette.line, (0em, 0em), (0.5em, 0.3em), (0em, 0.6em)))
+      for e in range(from, to + 1) {
+        place(top + left, dx: x(calc.pow(10.0, e)) - 0.75pt, dy: axis-y - 0.25em, line(length: 0.5em, angle: 90deg, stroke: 1.5pt + palette.line))
+      }
+      if unit != none {
+        place(top + left, dx: w - pad - 6em, dy: axis-y + 0.45em, box(width: 7em, align(right, text(font: fonts.mono, size: 0.45em, fill: palette.muted, unit))))
+      }
+      for (val, icon, label, vl) in above {
+        let cx = x(val)
+        place(top + left, dx: cx - 0.3em, dy: axis-y - 0.3em, circle(radius: 0.3em, fill: palette.ink, stroke: 2pt + palette.paper))
+        place(top + left, dx: cx - 3em, dy: 0em, box(width: 6em, height: axis-y - 0.55em, align(center + bottom, stack(
+          spacing: 0.3em,
+          if icon != none { icon },
+          text(font: fonts.display, weight: "bold", size: 0.7em, label),
+          text(font: fonts.mono, size: 0.52em, fill: palette.muted, vl),
+        ))))
+      }
+      if show-bottom {
+        for (val, icon, label, vl) in below {
+          let cx = x(val)
+          place(top + left, dx: cx - 0.36em, dy: axis-y - 0.36em, rect(width: 0.72em, height: 0.72em, fill: c, stroke: 2pt + palette.paper))
+          place(top + left, dx: cx - 3em, dy: axis-y + 0.6em, box(width: 6em, align(center + top, stack(
+            spacing: 0.3em,
+            box(fill: c, inset: (x: 0.3em, y: 0.2em), text(font: fonts.display, weight: "bold", size: 0.7em, fill: white, label)),
+            text(font: fonts.mono, size: 0.52em, weight: "bold", fill: c, vl),
+          ))))
+        }
+      }
+    })
+  })
+}
+
+/// Anatomy of an agent: the network (LLM) at the centre, goal and memory on the
+/// left, tools on the right, joined by the act / observe loop.
+#let agent-anatomy(goal, memory, tools, width: 25em, height: 9.6em) = context {
+  let c = accent.get()
+  let arrow(a, b, col, label: none, label-dy: -0.95em) = {
+    let (x1, y1) = a
+    let (x2, y2) = b
+    let dir = if x2 > x1 { 1 } else { -1 }
+    // cubic with horizontal tangents at both ends, so the head always lines up
+    let ex = x2 - dir * 0.4em
+    let mx = (x1 + ex) / 2
+    place(top + left, curve(
+      stroke: (paint: col, thickness: 2.5pt, cap: "round"),
+      curve.move(a),
+      curve.cubic((mx, y1), (mx, y2), (ex, y2)),
+    ))
+    place(top + left, polygon(fill: col, (x2, y2), (x2 - dir * 0.5em, y2 - 0.28em), (x2 - dir * 0.5em, y2 + 0.28em)))
+    if label != none {
+      place(top + left, dx: (x1 + x2) / 2 - 3em, dy: y1 + label-dy, box(width: 6em, align(center,
+        text(font: fonts.mono, size: 0.55em, weight: "bold", fill: col, label))))
+    }
+  }
+  let card(x, y, w, h, tag, col, body) = place(top + left, dx: x, dy: y, block(
+    width: w, height: h, fill: palette.paper-dark, stroke: (top: 3pt + col), inset: (x: 0.55em, top: 0.45em),
+    {
+      text(font: fonts.mono, size: 0.5em, weight: "bold", tracking: 0.06em, fill: col, upper(tag))
+      v(-0.35em)
+      text(size: 0.6em, body)
+    },
+  ))
+  let mid = height / 2
+  block(width: width, height: height, {
+    // the agent boundary
+    place(top + left, rect(width: 100%, height: 100%, stroke: (paint: c, thickness: 1.5pt, dash: "dashed")))
+    place(top + left, dx: 0.6em, dy: -0.45em, box(fill: palette.paper, inset: (x: 0.3em),
+      text(font: fonts.mono, size: 0.55em, weight: "bold", tracking: 0.08em, fill: c, "AGENTE")))
+    // left: goal and memory
+    card(0.8em, 0.9em, 7em, 3.7em, [obiettivo], palette.ink, goal)
+    card(0.8em, 5.1em, 7em, 3.7em, [memoria], palette.violet, memory)
+    // centre: the network
+    let (cx, cw) = (10.1em, 5.2em)
+    place(top + left, dx: cx, dy: mid - 2.6em, block(width: cw, height: 4.6em, fill: white, stroke: 2.5pt + c, radius: 0.3em,
+      align(center + horizon, network((3, 4, 4, 3), width: 4.4em, height: 3.8em, r: 0.24em)),
+    ))
+    place(top + left, dx: cx, dy: mid + 2.15em, box(width: cw, align(center, {
+      text(font: fonts.display, weight: "bold", size: 0.7em, fill: c, "LLM")
+      linebreak()
+      text(font: fonts.mono, size: 0.48em, fill: palette.muted, "la rete neurale")
+    })))
+    arrow((7.9em, 2.75em), (cx - 0.15em, mid - 1em), palette.ink)
+    arrow((7.9em, 6.95em), (cx - 0.15em, mid + 0.8em), palette.violet)
+    // right: tools
+    let tx = 18.3em
+    place(top + left, dx: tx, dy: 0.75em, text(font: fonts.mono, size: 0.5em, weight: "bold", tracking: 0.06em, fill: palette.coral, "STRUMENTI"))
+    for (i, t) in tools.enumerate() {
+      place(top + left, dx: tx, dy: 1.7em + i * 1.85em, block(width: 5.9em, height: 1.45em, fill: palette.paper-dark,
+        stroke: (left: 3pt + palette.coral), inset: (x: 0.45em), align(horizon, text(size: 0.6em, t))))
+    }
+    // the loop
+    arrow((cx + cw + 0.1em, mid - 1.1em), (tx - 0.25em, mid - 1.1em), palette.coral, label: [agisce])
+    arrow((tx - 0.25em, mid + 0.7em), (cx + cw + 0.1em, mid + 0.7em), palette.green, label: [osserva], label-dy: 0.35em)
   })
 }

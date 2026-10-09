@@ -14,7 +14,7 @@
 
 #title-slide(
   title: [Intelligenza\ artificiale],
-  subtitle: [Capire per innovare, \ senza smettere di pensare],
+  subtitle: [Cosa c'è dentro un chatbot, e cosa possiamo sfruttarli],
   author: [Gianluca Aguzzi],
   affiliation: [Università di Bologna · DISI],
   date: [2026],
@@ -62,21 +62,25 @@
 // ===========================================================================
 #part-slide(number: "01", title: [Capire l'AI], subtitle: [Cosa c'è dentro la scatola], color: palette.blue)
 
-#slide(kicker: [Partiamo dalle parole])[
+#slide(kicker: [Partiamo dalle parole], repeat: 2, self => [
+  #let answer = [La capacità di *risolvere problemi mai visti prima*.]
   #definition([intelligenza], pron: [in·tel·li·gèn·za], kind: [s.f.])[
-    La capacità di *risolvere problemi mai visti prima*.
+    #if self.subslide >= 2 { answer } else { hide(answer) }
   ]
   #v(0.8em)
   #block(
     stroke: (left: 1.5pt + palette.muted),
     inset: (left: 0.9em, y: 0.2em),
     text(size: 0.72em, fill: palette.ink-soft)[
+      #pause
       #text(font: fonts.mono, weight: "bold", fill: palette.muted)[NOTA] #h(0.4em)
-      Definirla resta un problema aperto: psicologi, filosofi e informatici non hanno una definizione condivisa
-      (Legg e Hutter ne hanno raccolte oltre 70). Questa è una definizione _operativa_, utile per parlare di macchine.
+      Definirla resta un problema aperto: psicologi, filosofi e informatici non hanno una definizione condivisa.
+      
+      Questa è una definizione _operativa_, utile per parlare di macchine.
+
     ],
   )
-]
+])
 #speaker-note[
   Definizione ripresa da Nello Cristianini, "Forma mentis" (Il Mulino, 2026): "L'intelligenza è la capacità di risolvere problemi mai visti prima."
   Sottolineare che non c'è accordo: Legg e Hutter (2007) hanno raccolto più di 70 definizioni diverse.
@@ -136,7 +140,17 @@
         columns: (auto, auto),
         column-gutter: 1.2em,
         align: horizon,
-        text(font: fonts.mono, size: 1.8em, weight: "bold", fill: white)[n #sym.arrow.bar 2n],
+        text(font: fonts.mono, size: 1.8em, weight: "bold", fill: white)[n#box(
+          baseline: 0.18em - 0.32em,
+          inset: (x: 0.3em),
+          grid(
+            columns: 3,
+            align: horizon,
+            line(length: 0.36em, angle: 90deg, stroke: 4pt + palette.sun),
+            line(length: 1em, stroke: 4pt + palette.sun),
+            polygon(fill: palette.sun, (0em, 0em), (0.38em, 0.18em), (0em, 0.36em)),
+          ),
+        )2n],
         text(size: 0.8em, fill: white.transparentize(20%))[infiniti numeri, \ #text(fill: palette.sun, weight: "bold")[una riga] di regola],
       ),
     ))
@@ -162,14 +176,15 @@
       #v(-0.2em)
       #text(size: 1.05em)[*Regole scritte a mano* da esperti.]
       #v(-0.4em)
-      #text(font: fonts.mono, size: 0.7em, fill: palette.muted)[SE febbre E tosse ALLORA influenza]
+      #let kw(k) = text(weight: "bold", fill: palette.violet, k)
+      #text(font: fonts.mono, size: 0.7em, fill: palette.muted)[#kw[SE] hai la febbre #kw[E] la tosse #kw[ALLORA] hai l'influenza]
     ],
     [
       #pic("images/perceptron.jpg", height: 5em)
       #v(0.3em)
       #pill([AI connessionista], fill: palette.blue)
       #v(-0.2em)
-      #text(size: 1.05em)[*Reti che imparano* dagli esempi.]
+      #text(size: 1.05em)[*"Reti" che imparano* dagli esempi.]
       #v(-0.4em)
       #text(font: fonts.mono, size: 0.7em, fill: palette.muted)[10 000 cartelle cliniche #sym.arrow.r la rete trova la regola]
     ],
@@ -181,99 +196,114 @@
   Foto: Deep Blue (IBM, 1997) e il Mark I Perceptron.
 ]
 
-#slide(title: [Dentro una rete neurale], repeat: 2, self => [
-  #let (uncover,) = utils.methods(self)
-  // three rows (label, diagram, caption) so both columns line up
+#slide(title: [Il neurone: un piccolo decisore (micro)])[
+  #let h = 11.6em
+  #let badge(n) = circle(radius: 0.55em, fill: palette.blue, stroke: 2pt + white,
+    align(center + horizon, text(font: fonts.mono, size: 0.6em, weight: "bold", fill: white, str(n))))
+  #let at(x, y, n) = place(top + left, dx: x - 0.55em, dy: y - 0.55em, badge(n))
   #grid(
-    columns: (1fr, 1fr),
-    rows: (auto, 7.4em, auto),
-    column-gutter: 1.4em,
-    row-gutter: 0.5em,
-    align: (left + top),
-    pill([un neurone], fill: palette.blue),
-    uncover("2-", pill([tanti neuroni, a strati], fill: palette.coral)),
-    align(center + horizon, perceptron(([febbre], [tosse], [dolori]), (0.8, 0.5, 0.2), [influenza?], size: 0.95em)),
-    uncover("2-", align(center + horizon, network((3, 5, 5, 2)))),
-    text(size: 0.8em)[Somma gli indizi, ciascuno col suo *peso*. \ Se il totale supera una soglia, "si accende".],
-    uncover("2-", text(size: 0.8em)[*Imparare* = aggiustare milioni (oggi miliardi) di pesi, esempio dopo esempio.]),
+    columns: (auto, 1fr),
+    column-gutter: 1.6em,
+    align: horizon,
+    box(width: h * 611 / 715, height: h, {
+      pic("images/neuron-cajal.jpg", height: h)
+      at(h * 0.5, h * 0.2, 1)
+      at(h * 0.33, h * 0.5, 2)
+      at(h * 0.43, h * 0.74, 3)
+      place(bottom + right, dx: -0.3em, dy: -0.3em, text(font: fonts.mono, size: 8pt, fill: palette.muted)[S. Ramón y Cajal, 1899])
+    }),
+    [
+      #senses(
+        [*Dendriti*: ricevono segnali da migliaia di altri neuroni.],
+        [*Corpo*: li somma.],
+        [*Assone*: se la somma supera una soglia, il neurone "_si accende_" e passa il segnale.],
+      )
+      #v(0.5em)
+      #text(size: 0.75em, fill: palette.ink-soft)[Le connessioni (*sinapsi*) si rafforzano con l'uso: \ è così che il cervello impara.]
+    ],
   )
-])
+]
 #speaker-note[
-  Il perceptron di Rosenblatt (1958): un neurone artificiale. Riceve degli indizi, li pesa, li somma e decide.
-  Differenza con l'AI simbolica: la regola "SE febbre E tosse" non la scrive nessuno. I pesi (quanto conta la febbre, quanto la tosse) li impara dagli esempi.
-  Un neurone da solo è limitato (Minsky e Papert, 1969: primo inverno). Mettendone tanti a strati, "deep" learning, la rete impara concetti sempre più astratti.
-  Un LLM moderno: centinaia di miliardi di pesi.
+  Disegno originale di Santiago Ramón y Cajal (1899): cellule di Purkinje del cervelletto di piccione. Cajal, Nobel 1906, fu il primo a capire che il cervello è fatto di cellule separate, i neuroni.
+  Il nostro cervello ne ha circa 86 miliardi, ognuno collegato a migliaia di altri.
+  Funzionamento semplificato: i dendriti raccolgono, il corpo somma, l'assone "spara" se si supera la soglia (tutto o niente).
+  Regola di Hebb (1949): "neuroni che si attivano insieme si collegano più forte". Imparare = cambiare la forza delle connessioni.
 ]
 
-#slide(title: [Inverni e primavere])[
-  #v(1em)
-  #timeline((
-    ([1950], [Turing: "le macchine possono pensare?"], "symb"),
-    ([1956], [Dartmouth: nasce il nome "AI"], "symb"),
-    ([1958], [Il Perceptron], "conn"),
-    ([anni ’70], [Primo inverno], "winter"),
-    ([anni ’80], [Sistemi esperti], "symb"),
-    ([anni ’90], [Secondo inverno], "winter"),
-    ([2012], [AlexNet: il deep learning vince], "boom"),
-    ([2017], [Il Transformer], "boom"),
-    ([2022], [ChatGPT], "boom"),
-  ), height: 8em)
-  #v(0.8em)
-  #align(center)[
-    #pill([simbolica], fill: palette.violet) #h(0.4em)
-    #pill([connessionista], fill: palette.blue) #h(0.4em)
-    #pill([inverno], fill: palette.muted) #h(0.4em)
-    #pill([rinascita], fill: palette.coral)
+#slide(title: [Il neurone artificiale])[
+  #let row(bio, art) = (
+    text(font: fonts.mono, size: 0.7em, fill: palette.muted, bio),
+    box(width: 1.3em, height: 0.6em, {
+      place(left + horizon, line(length: 0.9em, stroke: (paint: palette.muted.lighten(30%), thickness: 2pt, cap: "round")))
+      place(right + horizon, polygon(fill: palette.muted.lighten(30%), (0em, -0.22em), (0.4em, 0em), (0em, 0.22em)))
+    }),
+    text(size: 0.78em, art),
+  )
+  #grid(
+    columns: (auto, 1fr),
+    column-gutter: 0.6em,
+    align: horizon,
+    perceptron(([febbre], [tosse], [dolori]), (0.8, 0.5, 0.2), [influenza?], size: 0.88em),
+    grid(
+      columns: (auto, auto, 1fr),
+      column-gutter: 0.4em,
+      row-gutter: 0.75em,
+      align: (right + horizon, center + horizon, left + horizon),
+      ..row([dendriti], [*ingressi*: gli indizi]),
+      ..row([sinapsi], [*pesi*: un numero per ogni indizio]),
+      ..row([corpo], [*somma*: combina gli indizi pesati]),
+      ..row([assone], [*uscita*: acceso o spento]),
+    ),
+  )
+  #v(0.9em)
+  #align(center, block(
+    fill: palette.ink,
+    inset: (x: 1.2em, y: 0.6em),
+    text(fill: white)[#text(fill: palette.sun, weight: "bold")[Imparare] = aggiustare i pesi, esempio dopo esempio.],
+  ))
+]
+#speaker-note[
+  Il perceptron di Frank Rosenblatt (1958) copia lo schema del neurone, in versione matematica: ogni indizio ha un peso, si sommano, si confronta con una soglia.
+  Differenza con l'AI simbolica: la regola "SE febbre E tosse" non la scrive nessuno. I pesi (quanto conta la febbre, quanto la tosse) li impara dagli esempi, come le sinapsi che si rafforzano.
+  Un neurone da solo è limitato (Minsky e Papert, 1969: contribuisce al primo inverno).
+]
+
+#slide(title: [Tanti neuroni, a strati])[
+  #text(size: 0.75em, fill: palette.ink-soft)[
+    *Hubel e Wiesel* (1959): nel cervello del gatto i primi neuroni visivi vedono solo _linee_, \ quelli successivi _forme_ sempre più complesse.
   ]
-]
-#speaker-note[
-  Le promesse superano i risultati, arrivano tagli ai fondi: gli "inverni" dell'AI.
-  2012: AlexNet stravince la gara ImageNet di riconoscimento immagini, errore da circa 26% a 15%. Da lì il deep learning conquista tutto.
-  2016 AlphaGo, 2017 Transformer, 2022 ChatGPT.
-]
-
-#image-slide(
-  "images/go.jpg",
-  kicker: [2016 · Seul],
-  caption: [AlphaGo batte Lee Sedol. La "mossa 37" nessun umano l'avrebbe giocata.],
-  credit: [Foto: Dietmar Rabich, CC BY-SA 4.0],
-)
-#speaker-note[
-  Il Go ha più configurazioni possibili che atomi nell'universo: impossibile scriverne le regole strategiche a mano.
-  La mossa 37 della seconda partita: i commentatori la considerarono un errore, poi si rivelò geniale.
-  È il primo segnale pubblico che una macchina può generalizzare oltre ciò che le abbiamo insegnato.
-]
-
-#slide(title: [Perché proprio ora?])[
-  #grid(
-    columns: (1fr, 1fr, 1fr, 1fr),
-    column-gutter: 1em,
-    align: top,
-    card(tag: [01], number: true, title: [Metodi])[Apprendimento Automatico "profondo" (deep learning).],
-    card(tag: [02], number: true, title: [Architetture])[Reti neurali "Transformer" con attenzione (attention).],
-    card(tag: [03], number: true, title: [Dati])[WWW: testi, immagini, video, codice, audio.],
-    card(tag: [04], number: true, title: [Hardware])[GPU: calcolo parallelo a basso costo.],
-  )
-  #v(0.6em)
+  #v(0.2em)
   #pause
-  #text(size: 1.15em)[Nessuno basta da solo: è la *combinazione* a fare il salto.]
+  #let layers = (
+    ([pixel], "images/cnn-pixel.jpg"),
+    ([bordi], "images/cnn-edges.jpg"),
+    ([forme], "images/cnn-patterns.jpg"),
+    ([parti], "images/cnn-parts.jpg"),
+    ([oggetti], "images/cnn-objects.jpg"),
+  )
+  #align(center, block(width: 22em, {
+    deep-network((5, 4, 4, 3, 2), width: 22em, height: 4.4em, r: 0.4em, outputs: (([gatto], false), ([cane], true)))
+    v(-0.2em)
+    grid(
+      columns: (1fr,) * 5,
+      row-gutter: 0.25em,
+      ..layers.map(((_, path)) => align(center, pic(path, width: 2.4em, height: 2.4em, radius: 0.25em))),
+      ..layers.enumerate().map(((i, (l, _))) => align(center, text(
+        font: fonts.mono, size: 0.58em, weight: "bold",
+        fill: if i == 4 { palette.coral } else { palette.ink-soft }, l))),
+    )
+    v(-0.3em)
+    align(right, text(font: fonts.mono, size: 7pt, fill: palette.muted)[cosa "vede" ogni strato di una rete vera (GoogLeNet) · Olah et al., Distill 2017, CC BY 4.0])
+  }))
+  #pause
+  #v(0.1em)
+  #align(center, text(size: 0.8em)[Negli strati profondi la rete *comprime*: tiene solo ciò che serve per capire.])
 ]
 #speaker-note[
-  Quattro ingredienti maturati insieme.
-  Le idee di base esistevano dagli anni '80 (backpropagation).
-  Mancavano dati in quantità e potenza di calcolo: le GPU, nate per la grafica dei videogiochi, sono perfette per i calcoli delle reti neurali.
-]
-
-#split-slide("images/library.jpg", title: [Quanto "leggono"?], side: left, ratio: 42%, credit: [Diliff, CC BY-SA 4.0])[
-  #v(0.4em)
-  #big-number(size: 2.2em, [15 000 miliardi], [di "pezzi di parola" (token) per allenare un modello moderno])
-  #v(0.6em)
-  #big-number(size: 2.2em, [> 100 000 anni], [per leggerli tutti, 8 ore al giorno], color: palette.ink)
-]
-#speaker-note[
-  Ordine di grandezza: Llama 3 (Meta, 2024) è stato addestrato su circa 15 mila miliardi di token.
-  Conto: circa 11 mila miliardi di parole, a 250 parole al minuto per 8 ore al giorno fa ben oltre centomila anni.
-  Da qui la "fame" di dati e di calcolo (data center, energia).
+  David Hubel e Torsten Wiesel (1959, Nobel 1981): registrando i neuroni della corteccia visiva del gatto scoprono che alcuni rispondono solo a una linea con una certa inclinazione; più avanti nella catena, neuroni che combinano queste linee in forme.
+  Kunihiko Fukushima (1980) traduce l'idea nel Neocognitron, antenato delle reti convoluzionali di LeCun (1989) e di AlexNet (2012).
+  Deep learning = tanti strati. Ogni strato riassume il precedente: dai pixel ai bordi, alle forme, alle parti, all'oggetto.
+  Collegamento con "la compressione è la comprensione": in profondità milioni di pixel diventano pochi numeri che descrivono il concetto. Un LLM moderno: centinaia di miliardi di pesi.
 ]
 
 #slide(title: [Come impara una macchina])[
@@ -339,6 +369,133 @@
   Rinforzo: nessuno gli dice come camminare. Il robot prova: se cade −1, se resta in piedi +1. Dopo migliaia di tentativi impara (AlphaGo, robotica, e il feedback umano dei chatbot).
 ]
 
+#slide(title: [Inverni e primavere])[
+  #v(1em)
+  #timeline((
+    ([1950], [Turing: "le macchine possono pensare?"], "symb"),
+    ([1956], [Dartmouth: nasce il nome "AI"], "symb"),
+    ([1958], [Il Perceptron], "conn"),
+    ([anni ’70], [Primo inverno], "winter"),
+    ([anni ’80], [Sistemi esperti], "symb"),
+    ([anni ’90], [Secondo inverno], "winter"),
+    ([2012], [AlexNet: il deep learning vince], "boom"),
+    ([2017], [Il Transformer], "boom"),
+    ([2022], [ChatGPT], "boom"),
+  ), height: 8em)
+  #v(0.8em)
+  #align(center)[
+    #pill([simbolica], fill: palette.violet) #h(0.4em)
+    #pill([connessionista], fill: palette.blue) #h(0.4em)
+    #pill([inverno], fill: palette.muted) #h(0.4em)
+    #pill([rinascita], fill: palette.coral)
+  ]
+]
+#speaker-note[
+  Le promesse superano i risultati, arrivano tagli ai fondi: gli "inverni" dell'AI.
+  2012: AlexNet stravince la gara ImageNet di riconoscimento immagini, errore da circa 26% a 15%. Da lì il deep learning conquista tutto.
+  2016 AlphaGo, 2017 Transformer, 2022 ChatGPT.
+]
+
+#image-slide(
+  "images/go.jpg",
+  kicker: [2016 · Seul],
+  caption: [AlphaGo batte Lee Sedol. La "mossa 37" nessun umano l'avrebbe giocata.],
+  credit: [Foto: Dietmar Rabich, CC BY-SA 4.0],
+)
+#speaker-note[
+  Il Go ha più configurazioni possibili che atomi nell'universo: impossibile scriverne le regole strategiche a mano.
+  La mossa 37 della seconda partita: i commentatori la considerarono un errore, poi si rivelò geniale.
+  È il primo segnale pubblico che una macchina può generalizzare oltre ciò che le abbiamo insegnato.
+]
+
+#slide(title: [Perché proprio ora?])[
+  #grid(
+    columns: (1fr, 1fr, 1fr, 1fr),
+    column-gutter: 1em,
+    align: top,
+    card(tag: [01], number: true, title: [Metodi])[Apprendimento Automatico "profondo" (deep learning).],
+    card(tag: [02], number: true, title: [Architetture])[Reti neurali "Transformer" con attenzione (attention).],
+    card(tag: [03], number: true, title: [Dati])[WWW: testi, immagini, video, codice, audio.],
+    card(tag: [04], number: true, title: [Hardware])[GPU: calcolo parallelo a basso costo.],
+  )
+]
+#speaker-note[
+  Quattro ingredienti maturati insieme.
+  Le idee di base esistevano dagli anni '80 (backpropagation).
+  Mancavano dati in quantità e potenza di calcolo: le GPU, nate per la grafica dei videogiochi, sono perfette per i calcoli delle reti neurali.
+]
+
+#split-slide("images/library.jpg", title: [Quanto "leggono"?], side: left, ratio: 42%, credit: [Diliff, CC BY-SA 4.0])[
+  #v(0.4em)
+  #big-number(size: 2.2em, [15 000 miliardi], [di "pezzi di parola" (token) per allenare un modello moderno])
+  #v(0.6em)
+  #big-number(size: 2.2em, [> 100 000 anni], [per leggerli tutti, 8 ore al giorno], color: palette.ink)
+]
+#speaker-note[
+  Ordine di grandezza: Llama 3 (Meta, 2024) è stato addestrato su circa 15 mila miliardi di token.
+  Conto: circa 11 mila miliardi di parole, a 250 parole al minuto per 8 ore al giorno fa ben oltre centomila anni.
+  Da qui la "fame" di dati e di calcolo (data center, energia).
+]
+
+#slide(title: [Quanto sono "large"?])[
+  #text(size: 0.85em)[Ogni *peso* è un numero, e in memoria occupa 2 byte.]
+  #v(0.4em)
+  #bars((
+    ([il tuo portatile], [memoria], 16, [16 GB], palette.ink),
+    ([GPT-2], [2019 · 1,5 mld di pesi], 3, [3 GB], palette.blue.lighten(40%)),
+    ([GPT-3], [2020 · 175 mld di pesi], 350, [350 GB], palette.blue.lighten(20%)),
+    ([Kimi K2], [2025 · 1 000 mld di pesi], 2000, [2 000 GB], palette.blue),
+  ), label-width: 8em)
+  #v(0.1em)
+  #pause
+  #align(center, block(
+    fill: palette.ink,
+    inset: (x: 1.2em, y: 0.6em),
+    text(fill: white)[Solo per #text(fill: palette.sun, weight: "bold")[tenerlo in memoria] servono circa 25 GPU da 80 GB.],
+  ))
+]
+#speaker-note[
+  Un "peso" è un numero; in 16 bit occupa 2 byte. Quindi: miliardi di pesi × 2 = GB.
+  GPT-2 (OpenAI, 2019): 1,5 miliardi. GPT-3 (2020): 175 miliardi. Kimi K2 (Moonshot AI, 2025): mille miliardi, uno dei più grandi modelli aperti. I modelli chiusi (GPT-5, Claude, Gemini) non dichiarano le dimensioni.
+  2 TB = 2000 GB: 25 schede GPU H100 da 80 GB, solo per caricarlo, senza contare la memoria per "pensare". Con la compressione (quantizzazione, 4-8 bit) si scende a 0,6-1 TB, ma resta fuori portata di un PC.
+  Il portatile in barra è quasi invisibile: è questo il punto.
+]
+
+#slide(title: [Più grandi di un cervello?], repeat: 2, self => [
+  #let photo(path) = box(width: 2.6em, height: 2.6em, radius: 50%, clip: true, stroke: 2pt + palette.paper, pic(path, width: 2.6em, height: 2.6em))
+  #log-scale(
+    (
+      (5e7, photo("images/animal-fly.jpg"), [moscerino], [50 mln]),
+      (1e9, photo("images/animal-bee.jpg"), [ape], [1 mld]),
+      (1e11, photo("images/animal-mouse.jpg"), [topo], [100 mld]),
+      (1e13, photo("images/animal-cat.jpg"), [gatto], [10 000 mld]),
+      (1e14, photo("images/animal-human.jpg"), [uomo], [100 000 mld]),
+    ),
+    (
+      (6e7, none, [AlexNet], [60 mln]),
+      (1.5e9, none, [GPT-2], [1,5 mld]),
+      (1.75e11, none, [GPT-3], [175 mld]),
+      (1e12, none, [Kimi K2], [1 000 mld]),
+    ),
+    show-bottom: self.subslide >= 2,
+    height: 9.4em,
+    unit: [ogni tacca = ×10],
+  )
+  #v(-0.6em)
+  #align(center, text(size: 0.8em)[
+    #text(fill: palette.ink)[● sinapsi] #h(1em)
+    #text(fill: palette.blue)[■ pesi] #h(1em)
+    #text(fill: palette.muted)[(paragone grossolano: 1 peso ≈ 1 sinapsi)]
+  ])
+])
+#speaker-note[
+  Confronto grossolano ma utile: il peso di una rete è l'analogo della forza di una sinapsi.
+  Moscerino: connettoma completo pubblicato su Nature nel 2024 (FlyWire): circa 140 000 neuroni e 50 milioni di sinapsi. Ape: circa 1 milione di neuroni, ordine di un miliardo di sinapsi. Topo: circa 70 milioni di neuroni, ordine di 100 miliardi di sinapsi. Gatto: circa 10 000 miliardi. Uomo: 86 miliardi di neuroni, 100-1000 mila miliardi di sinapsi. Sono ordini di grandezza.
+  AlexNet (2012), la rete profonda che ha fatto ripartire tutto, aveva circa 60 milioni di pesi: quanto le sinapsi di un moscerino.
+  I modelli più grandi stanno tra il topo e il gatto. Il nostro cervello ha ancora circa 100 volte più connessioni, consuma 20 watt e impara da molti meno esempi.
+  Attenzione: una sinapsi è molto più complessa di un numero; il paragone serve solo per l'ordine di grandezza.
+]
+
 #slide(title: [Il Transformer: l'attenzione])[
   #text(size: 1em, fill: palette.muted)[Ogni parola guarda tutte le altre e decide quali *contano*.]
   #v(1.6em)
@@ -380,51 +537,64 @@
     #text(size: 0.8em, body)
   ]
   #chevrons((
-    (inside([la biblioteca], [Pre-addestramento]), below([Legge mezza Internet e indovina la parola dopo.], [auto-supervisionato], palette.violet)),
-    (inside([la scuola], [Fine-tuning]), below([Impara da esempi di domande e risposte giuste.], [supervisionato], palette.blue)),
-    (inside([il tirocinio], [Feedback umano]), below([Le persone premiano la risposta migliore.], [per rinforzo], palette.coral)),
+    (inside([come l'evoluzione], [Pre-addestramento]), below([Indovina la parola dopo su mezza Internet: *comprimendo*, si forma il "cervello".], [auto-supervisionato], palette.violet)),
+    (inside([come la scuola], [Fine-tuning]), below([Impara *come comportarsi*: esempi di domande e risposte giuste.], [supervisionato], palette.blue)),
+    (inside([come il lavoro], [Feedback umano]), below([Si affina *sul campo*: le persone premiano la risposta migliore.], [per rinforzo], palette.coral)),
   ), colors: (palette.violet, palette.blue, palette.coral), height: 3em)
 ]
 #speaker-note[
-  Le tre fasi riusano i tre modi di imparare visti prima (stessi colori).
-  Pre-addestramento: auto-supervisionato. Nessuno etichetta niente: la "risposta giusta" è la parola che segue davvero nel testo. Mesi su migliaia di GPU; impara lingua e conoscenza del mondo.
-  Fine-tuning: supervisionato. Esempi di domande con la risposta scritta bene da persone: impara a fare l'assistente.
-  Feedback umano (RLHF): per rinforzo. Le persone confrontano risposte e premiano la migliore; il modello impara le preferenze (utile, onesto, innocuo).
+  Le tre fasi riusano i tre modi di imparare visti prima (stessi colori). Analogia: evoluzione, scuola, lavoro.
+  Pre-addestramento, come l'evoluzione: auto-supervisionato. Nessuno etichetta niente: la "risposta giusta" è la parola che segue davvero nel testo. Per indovinarla deve comprimere (torna "la compressione è la comprensione"): si forma la struttura che permette di capire lingua e mondo. Come l'evoluzione ha costruito in milioni di anni un cervello pronto a imparare. Mesi su migliaia di GPU, la fase più costosa.
+  Fine-tuning, come la scuola: supervisionato. Esempi di domande con la risposta scritta bene da persone: non impara tanto cose nuove, impara come comportarsi, cioè a fare l'assistente.
+  Feedback umano (RLHF), come il lavoro: per rinforzo. Le persone confrontano risposte e premiano la migliore; il modello si affina sul campo secondo le preferenze (utile, onesto, innocuo). Oggi è la fase che cresce di più (modelli che "ragionano").
+  Limite dell'analogia: l'evoluzione non trasmette conoscenze specifiche, il pre-addestramento invece ne accumula moltissime.
 ]
 
-#slide(title: [Indovina la parola dopo])[
-  #text(size: 1.25em)[La capitale d'Italia è #box(fill: palette.blue, inset: (x: 0.3em, y: 0.15em), text(fill: white, weight: "bold")[Roma])]
-
-  #pause
-  #text(size: 1.25em)[Alla fine del giallo, l'assassino è #box(stroke: (bottom: 3pt + palette.blue), inset: (x: 0.5em, y: 0.15em), text(fill: palette.blue, weight: "bold")[?])]
-  #v(0.4em)
-  #pause
-  #definition([predire = comprimere], size: 1.4em)[
-    Per indovinare bene la parola dopo, devi aver capito la storia, le persone, il mondo.
-  ]
-]
+#slide(title: [Indovina la parola dopo], repeat: 2, self => [
+  #let show-probs = self.subslide >= 2
+  // one candidate: token, probability bar, percentage
+  #let cand(tok, p, top: false) = (
+    align(right, text(font: fonts.display, weight: "bold", size: 1.05em, fill: if top { palette.blue } else { palette.ink-soft }, tok)),
+    box(width: 7em, height: 0.85em, {
+      place(left + horizon, box(width: 100%, height: 100%, fill: palette.paper-dark))
+      place(left + horizon, box(width: 7em * p / 100, height: 100%, fill: if top { palette.blue } else { palette.blue.lighten(55%) }))
+    }),
+    text(font: fonts.mono, size: 0.65em, weight: "bold", fill: if top { palette.blue } else { palette.muted }, str(p) + "%"),
+  )
+  #let blank = box(stroke: (bottom: 3pt + palette.blue), inset: (x: 0.5em, y: 0.1em), text(fill: palette.blue, weight: "bold")[?])
+  #let probs = grid(
+    columns: (auto, auto, auto),
+    column-gutter: 0.5em,
+    row-gutter: 0.5em,
+    align: horizon,
+    ..(([Roma], 92), ([una], 3), ([Milano], 2), ([Firenze], 1), ([Torino], 1)).enumerate().map(((i, (t, p))) => cand(t, p, top: i == 0)).flatten(),
+  )
+  #grid(
+    columns: (auto, 1fr),
+    column-gutter: 2.5em,
+    align: horizon,
+    text(size: 1.4em)[La capitale \ d'Italia è #blank],
+    if show-probs { probs } else { hide(probs) },
+  )
+  #v(1.2em)
+  #let msg = align(center, text(size: 0.85em)[Il modello non "sa" la risposta: dà una *probabilità* a ogni parola possibile.])
+  #if show-probs { msg } else { hide(msg) }
+])
 #speaker-note[
-  La prima frase richiede solo memoria. La seconda richiede di aver capito tutto il romanzo: personaggi, moventi, indizi.
-  Ecco perché un compito così semplice produce capacità così generali: per prevedere bene bisogna comprimere il mondo.
-  Collegamento con la definizione iniziale.
+  È lo stesso gioco dei numeri dell'inizio, ma con le parole. Il modello non conosce una risposta: assegna una probabilità a ogni parola possibile e sceglie tra le più probabili. Le percentuali sono illustrative.
+  "una" è plausibile: "La capitale d'Italia è una città...". Il modello considera tutte le continuazioni.
+  Come per 2, 4, 6, 8 bisognava trovare la regola, per dare il 92% a "Roma" bisogna aver compresso conoscenza sul mondo. Prevedere bene richiede di comprimere: torna l'idea dell'inizio.
+  Esempio da raccontare a voce: "Alla fine del giallo, l'assassino è…": per indovinarlo bisogna aver capito tutto il romanzo (personaggi, moventi, indizi). Ecco perché un compito così semplice produce capacità così generali.
 ]
 
 #slide(title: [Dal modello all'agente])[
-  #grid(
-    columns: (1.15fr, 1fr),
-    column-gutter: 1.4em,
-    align: horizon,
-    [
-      #text(size: 1.5em, font: fonts.display, weight: "bold")[Un modello *risponde*.]
-      #v(-0.3em)
-      #text(size: 1.5em, font: fonts.display, weight: "bold")[Un agente *fa*.]
-      #v(0.6em)
-      #text(font: fonts.mono, size: 0.7em, fill: palette.muted)["Prenotami un treno per Roma venerdì mattina"]
-      #v(-0.2em)
-      #text(size: 0.85em)[cerca gli orari #sym.arrow.r confronta #sym.arrow.r compra #sym.arrow.r mette in calendario]
-    ],
-    agent-loop(),
-  )
+  #text(size: 1.2em, font: fonts.display, weight: "bold")[Un modello *risponde*. Un agente *fa*.]
+  #v(0.9em)
+  #align(center, agent-anatomy(
+    ["Prenotami un treno per Roma venerdì mattina"],
+    [le tue preferenze, cosa ha già fatto],
+    ([cerca sul web], [biglietteria], [calendario], [email]),
+  ))
 ]
 #speaker-note[
   Agente = LLM + strumenti (browser, email, codice, gestionali) + un obiettivo, in un ciclo: pensa, agisce, osserva il risultato, riprova.
@@ -557,9 +727,9 @@
   #grid(
     columns: (1fr, 1fr, 1fr, 1fr),
     column-gutter: 0.8em,
-    sector("images/mammography.jpg", [medicina], [+29% tumori], [Screening al seno con l'AI.]),
+    sector("images/mammography.jpg", [medicina], [Identificazione], [Screening al seno con l'AI.]),
     sector("images/waymo.jpg", [trasporti], [Zero autisti], [Robotaxi Waymo in servizio.]),
-    sector("images/factory.jpg", [manifattura], [Guasti previsti], [Manutenzione prima del fermo.]),
+    sector("images/factory.jpg", [manifattura], [Guasti previsti], [Manutenzione preventiva.]),
     sector("images/wind.jpg", [energia], [−40% energia], [Raffreddamento data center.]),
   )
 ]
