@@ -8,7 +8,7 @@
 #let pdfpc-config = pdfpc.config(duration-minutes: 20, last-minutes: 3, note-font-size: 14)
 
 #show: divulga-theme.with(
-  config-common(preamble: pdfpc-config),
+  config-common(preamble: pdfpc-config, handout: sys.inputs.at("handout", default: "false") == "true"),
   config-info(title: [Intelligenza artificiale], author: [Gianluca Aguzzi]),
 )
 

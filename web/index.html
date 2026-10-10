@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="it">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Intelligenza artificiale</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&family=Inter:wght@400;500&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+  /* Layout: a single reading column; the slides stack top to bottom like a printed handout. Tokens from theme/divulga.typ. */
+  :root {
+    --bg: #F5F3EE; --fg: #121317; --muted: #74767D; --line: #D9D4C9; --accent: #2E4BFF; --coral: #FF5233;
+    --display: "Space Grotesk", "Inter", system-ui, sans-serif;
+    --body: "Inter", system-ui, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, monospace;
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #121317; --fg: #F5F3EE; --muted: #9A9CA3; --line: #2A2C33; --accent: #7F92FF; color-scheme: dark } }
+  :root[data-theme="dark"] { --bg: #121317; --fg: #F5F3EE; --muted: #9A9CA3; --line: #2A2C33; --accent: #7F92FF; color-scheme: dark }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 400 1rem/1.5 var(--body) }
+  .wrap { max-width: 72rem; margin: 0 auto; padding-inline: 16px; padding-block: 2.5rem 4rem; display: grid; gap: 1.5rem }
+  header { display: grid; gap: .5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--line) }
+  header::before { content: ""; width: 3.2rem; height: .35rem; background: var(--coral) }
+  h1 { margin: 0; font: 700 clamp(2rem, 6vw, 3.5rem)/1.05 var(--display); letter-spacing: -.03em; text-wrap: balance }
+  .sub { margin: 0; color: var(--muted); max-width: 40rem }
+  .meta { margin: 0; font: 500 .8rem/1.6 var(--mono); letter-spacing: .04em; text-transform: uppercase; color: var(--muted); display: flex; flex-wrap: wrap; gap: .25rem 1.25rem }
+  .meta a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 3px }
+  .meta a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px }
+  main { display: grid; gap: 1.25rem }
+  main img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; border: 1px solid var(--line); border-radius: 4px; background: var(--line) }
+</style>
+<div class="wrap">
+  <header>
+    <h1>Intelligenza artificiale</h1>
+    <p class="sub">Cosa c'è dentro un chatbot, e come possiamo sfruttarli. Talk divulgativo di 20 minuti.</p>
+    <p class="meta">
+      <span>Gianluca Aguzzi · Università di Bologna · DISI · 2026</span>
+      <a href="https://cric96.github.io/slides-2026-ai-introduction/presentation-2026-ai-chatbot-innovazione.pdf">Scarica il PDF</a>
+      <a href="https://github.com/cric96/slides-2026-ai-introduction">Sorgenti</a>
+    </p>
+  </header>
+  <main>
+<!--slides-->
+  </main>
+</div>
