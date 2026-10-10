@@ -19,7 +19,7 @@ site:
 	rm -rf _site && mkdir -p _site/slides
 	$(TYPST) compile $(FLAGS) $(MAIN).typ _site/$(MAIN).pdf
 	$(TYPST) compile $(FLAGS) --input handout=true --ppi 144 $(MAIN).typ "_site/slides/{0p}.png"
-	ls _site/slides | awk '{printf "    <img src=\"slides/%s\" alt=\"Slide %d\" loading=\"lazy\">\n", $$0, NR}' > _site/slides.html
+	ls _site/slides | awk '{printf "    <img src=\"slides/%s\" alt=\"Slide %d\">\n", $$0, NR}' > _site/slides.html
 	sed '/<!--slides-->/r _site/slides.html' web/index.html > _site/index.html
 
 clean:
