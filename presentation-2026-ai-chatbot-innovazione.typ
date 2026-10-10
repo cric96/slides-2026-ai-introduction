@@ -14,7 +14,7 @@
 
 #title-slide(
   title: [Intelligenza\ artificiale],
-  subtitle: [Cosa c'è dentro un chatbot, e cosa possiamo sfruttarli],
+  subtitle: [Cosa c'è dentro un chatbot, e come possiamo sfruttarli],
   author: [Gianluca Aguzzi],
   affiliation: [Università di Bologna · DISI],
   date: [2026],
@@ -40,6 +40,7 @@
       #text(size: 0.95em, fill: palette.muted)[Ricercatore · Università di Bologna]
       #v(0.2em)
       #set text(size: 0.85em)
+      - *Insegnamento*: Ingegneria del Software, Agenti per lo Sviluppo del Software
       - *Ricerca*: AI collettiva, sistemi multi-agente, LLM
       
       #text(font: fonts.mono, size: 0.7em, fill: palette.muted)[gianluca.aguzzi\@unibo.it · gianluca.aguzzi.dev]
@@ -50,6 +51,7 @@
   Presentazione veloce (20-30 secondi): chi sono e perché mi occupo di AI.
 ]
 
+/*
 #statement-slide(dark: true, kicker: [30 novembre 2022], attribution: [ChatGPT, 1 milione di utenti in 5 giorni])[
   In cinque giorni, *un milione di persone* ha iniziato a parlare con una macchina.
 ]
@@ -57,7 +59,7 @@
   Apertura: tutti ricordiamo la prima volta che abbiamo usato ChatGPT.
   100 milioni di utenti in circa due mesi: la tecnologia di consumo più veloce di sempre.
   Domanda guida del talk: come ci siamo arrivati, cosa ci possiamo fare, cosa rischiamo.
-]
+]*/
 
 // ===========================================================================
 #part-slide(number: "01", title: [Capire l'AI], subtitle: [Cosa c'è dentro la scatola], color: palette.blue)
@@ -235,7 +237,7 @@
     text(font: fonts.mono, size: 0.7em, fill: palette.muted, bio),
     box(width: 1.3em, height: 0.6em, {
       place(left + horizon, line(length: 0.9em, stroke: (paint: palette.muted.lighten(30%), thickness: 2pt, cap: "round")))
-      place(right + horizon, polygon(fill: palette.muted.lighten(30%), (0em, -0.22em), (0.4em, 0em), (0em, 0.22em)))
+      place(right + horizon, polygon(fill: palette.muted.lighten(30%), (0em, 0em), (0.4em, 0.22em), (0em, 0.44em)))
     }),
     text(size: 0.78em, art),
   )
@@ -306,7 +308,7 @@
   Collegamento con "la compressione è la comprensione": in profondità milioni di pixel diventano pochi numeri che descrivono il concetto. Un LLM moderno: centinaia di miliardi di pesi.
 ]
 
-#slide(title: [Come impara una macchina])[
+#slide(title: [Come impara una macchina -- _Machine Learning_])[
   #let lab(icon, l) = stack(spacing: 0.12em, icon, text(font: fonts.mono, size: 0.42em, fill: palette.muted, l))
   #let grey = palette.muted.lighten(30%)
   // the same mixed animals, first unlabelled and grey, then grouped and coloured
@@ -348,7 +350,7 @@
   #v(-0.1em)
   #pause
   #learning-flow(
-    [per rinforzo], [prova, premio,\ riprova],
+    [per rinforzo], [premio o punizione],
     panel(grid(
       columns: 4, column-gutter: 0.15em, align: horizon,
       robot-fallen(size: 1.9em), text(font: fonts.display, weight: "bold", fill: palette.coral)[−1],
@@ -396,6 +398,7 @@
   2016 AlphaGo, 2017 Transformer, 2022 ChatGPT.
 ]
 
+/*
 #image-slide(
   "images/go.jpg",
   kicker: [2016 · Seul],
@@ -407,6 +410,7 @@
   La mossa 37 della seconda partita: i commentatori la considerarono un errore, poi si rivelò geniale.
   È il primo segnale pubblico che una macchina può generalizzare oltre ciò che le abbiamo insegnato.
 ]
+*/
 
 #slide(title: [Perché proprio ora?])[
   #grid(
@@ -423,6 +427,24 @@
   Quattro ingredienti maturati insieme.
   Le idee di base esistevano dagli anni '80 (backpropagation).
   Mancavano dati in quantità e potenza di calcolo: le GPU, nate per la grafica dei videogiochi, sono perfette per i calcoli delle reti neurali.
+]
+
+#slide(title: [Cos'è un LLM?])[
+  #text(size: 1.1em)[Una rete neurale enorme, allenata sui testi, che *prevede la parola successiva*.]
+  #v(1em)
+  #grid(
+    columns: (1fr, 1fr, 1fr),
+    column-gutter: 1.2em,
+    align: top,
+    card(title: [#hl[L]arge])[Miliardi di pesi, migliaia di miliardi di parole lette.],
+    card(title: [#hl[L]anguage])[Impara dal linguaggio: libri, siti, codice.],
+    card(title: [#hl[M]odel])[Una descrizione *compressa* del testo (e del mondo).],
+  )
+]
+#speaker-note[
+  ChatGPT, Claude, Gemini sono chatbot costruiti sopra un LLM.
+  Le tre lettere sono la mappa delle prossime slide: Large (quanto leggono, quanto sono grandi), Language (il Transformer), Model (come nasce, indovina la parola dopo).
+  "Model" richiama "comprimere, comprendere, prevedere": il modello è la descrizione compatta che serve a prevedere.
 ]
 
 #split-slide("images/library.jpg", title: [Quanto "leggono"?], side: left, ratio: 42%, credit: [Diliff, CC BY-SA 4.0])[
@@ -515,6 +537,7 @@
   Il parallelismo è il segreto: sfrutta perfettamente le GPU.
 ]
 
+/*
 #image-slide(
   "images/datacenter.jpg",
   kicker: [Leggi di scala],
@@ -524,7 +547,7 @@
 #speaker-note[
   Le "scaling laws" (2020): l'errore scende in modo regolare aumentando dati e calcolo.
   Per le aziende ha voluto dire: investire in scala è una scommessa quasi sicura. Da qui la corsa ai data center.
-]
+]*/
 
 #slide(title: [Come nasce un LLM])[
   #let inside(k, t) = [
@@ -537,7 +560,7 @@
     #text(size: 0.8em, body)
   ]
   #chevrons((
-    (inside([come l'evoluzione], [Pre-addestramento]), below([Indovina la parola dopo su mezza Internet: *comprimendo*, si forma il "cervello".], [auto-supervisionato], palette.violet)),
+    (inside([come l'evoluzione], [Pre-addestramento]), below([Indovina la parola dopo su mezza Internet: *comprimendo*, si forma il "cervello".], [non supervisionato], palette.violet)),
     (inside([come la scuola], [Fine-tuning]), below([Impara *come comportarsi*: esempi di domande e risposte giuste.], [supervisionato], palette.blue)),
     (inside([come il lavoro], [Feedback umano]), below([Si affina *sul campo*: le persone premiano la risposta migliore.], [per rinforzo], palette.coral)),
   ), colors: (palette.violet, palette.blue, palette.coral), height: 3em)
@@ -587,6 +610,40 @@
   Esempio da raccontare a voce: "Alla fine del giallo, l'assassino è…": per indovinarlo bisogna aver capito tutto il romanzo (personaggi, moventi, indizi). Ecco perché un compito così semplice produce capacità così generali.
 ]
 
+#slide(title: [Parola dopo parola], repeat: 5, self => [
+  #let prompt = ("La", "capitale", "d'Italia", "è")
+  #let gen = ("Roma,", "la", "città", "eterna")
+  #let tok(t, fill, ink, weight: "medium") = box(fill: fill, inset: (x: 0.3em, y: 0.2em), text(font: fonts.display, weight: weight, fill: ink, t))
+  #let row(i) = {
+    box(stroke: (paint: palette.muted, thickness: 1pt, dash: "dashed"), inset: 0.2em, {
+      prompt.map(t => tok(t, palette.paper-dark, palette.ink)).join(h(0.2em))
+      for t in gen.slice(0, i) { h(0.2em); tok(t, palette.blue.lighten(85%), palette.blue) }
+    })
+    h(0.5em)
+    text(fill: palette.muted, sym.arrow.r)
+    h(0.5em)
+    tok(gen.at(i), palette.blue, white, weight: "bold")
+  }
+  #text(size: 0.9em, stack(spacing: 0.4em, ..range(4).map(i => if self.subslide > i { row(i) } else { hide(row(i)) })))
+  #v(0.4em)
+  #let cards = grid(
+    columns: (1fr, 1fr, 1fr),
+    column-gutter: 1.2em,
+    align: top,
+    card(title: [Prompt])[Il testo di partenza: la *tua domanda*.],
+    card(title: [Autoregressivo])[Ogni parola scritta *torna in ingresso*.],
+    card(title: [Contesto])[Ciò che rilegge a ogni passo: la sua *unica memoria*.],
+  )
+  #if self.subslide >= 5 { cards } else { hide(cards) }
+])
+#speaker-note[
+  Il modello prevede una parola sola. Per scrivere una risposta la aggiunge al testo e ricomincia: rilegge tutto, prevede la successiva, e così via. È il significato di "autoregressivo".
+  Il prompt è l'inizio del testo: la nostra domanda (più istruzioni nascoste dell'app). Per questo il modo in cui chiediamo cambia la risposta.
+  Il contesto (la riga tratteggiata) è tutto ciò che il modello vede in quel momento: chat, documenti allegati, risposte già date. Oggi può contenere centinaia di migliaia di parole, qualche romanzo.
+  Il modello non impara mentre parliamo: i pesi non cambiano. Chiusa la chat, dimentica. La "memoria" delle app sono appunti salvati e rimessi nel prompt.
+  Siccome sceglie tra le parole più probabili, la stessa domanda può dare risposte diverse.
+]
+
 #slide(title: [Dal modello all'agente])[
   #text(size: 1.2em, font: fonts.display, weight: "bold")[Un modello *risponde*. Un agente *fa*.]
   #v(0.9em)
@@ -602,6 +659,7 @@
   Teniamolo a mente: è anche dove nascono i rischi (parte 3).
 ]
 
+/*
 #slide(title: [Un agente al lavoro], repeat: 4, self => [
   #let on(icon) = active => icon(size: 2.6em, fill: if active { palette.ink } else { palette.muted.lighten(30%) })
   #let llm = box(width: 2.6em, height: 2.6em, align(center + horizon, network((3, 4, 3), width: 2.6em, height: 2.2em, r: 0.17em)))
@@ -623,6 +681,7 @@
   Pensa (decide il prossimo passo), agisce (usa uno strumento: un sito, un'app, un gestionale), osserva il risultato, e ricomincia finché l'obiettivo è raggiunto.
   Il modello non "sa" gli orari: li va a cercare con uno strumento. E spende soldi veri: qui nasce la domanda sulla sicurezza (parte 3).
 ]
+*/
 
 // ===========================================================================
 #part-slide(number: "02", title: [Innovare con l'AI], subtitle: [Dalla ricerca alle imprese], color: palette.green)
@@ -646,13 +705,48 @@
   Lezione: la ricerca pubblica è un bene comune; il vantaggio va a chi sa trasformarla in prodotto.
 ]
 
-#statement-slide(kicker: [Buona notizia per le PMI], size: 2.2em)[
+#statement-slide(kicker: [], size: 2.2em)[
   Non serve costruire il modello. \ Il valore è nella *competenza di settore* e nei *dati*.
 ]
 #speaker-note[
   Costruire un modello di frontiera costa miliardi: lo fanno pochissime aziende al mondo.
   Ma i modelli si "affittano". Quello che non si affitta è conoscere il proprio mestiere e avere i propri dati (ordini, processi, clienti).
   ISTAT 2025: AI usata dal 16,4% delle imprese con almeno 10 addetti (8,2% nel 2024); grandi imprese 53%, PMI 15,7%. Ostacolo principale: le competenze.
+]
+
+#slide(title: [Chiuso o aperto?])[
+  #let pro(t) = [#text(fill: palette.green, weight: "bold")[+] #t]
+  #let con(t) = [#text(fill: palette.coral, weight: "bold")[−] #t]
+  #v(0.4em)
+  #grid(
+    columns: (1fr, 1fr),
+    column-gutter: 1.6em,
+    align: top,
+    card(tag: [GPT · Claude · Gemini], title: [Chiusi: si affittano])[
+      Via app o API, sui server di chi li produce. \
+      #pro[I più potenti, zero infrastruttura.] \
+      #con[Non si ha controllo sui dati.]
+    ],
+    card(tag: [Llama · Mistral · Qwen · DeepSeek], title: [Aperti: si scaricano])[
+      I pesi sono pubblici: girano *sui tuoi server*. \
+      #pro[Dati in casa, personalizzabili.] \
+      #con[Servono hardware e competenze.]
+    ],
+  )
+  #v(0.8em)
+  #pause
+  #align(center, block(
+    fill: palette.ink,
+    inset: (x: 1.2em, y: 0.6em),
+    text(fill: white)[#text(fill: palette.sun, weight: "bold")["Aperto"] = pesi scaricabili. Quasi mai i dati di allenamento.],
+  ))
+]
+#speaker-note[
+  Chiusi: GPT (OpenAI), Claude (Anthropic), Gemini (Google). Si pagano a consumo o in abbonamento; il modello non lascia mai i server del produttore.
+  Aperti: Llama (Meta), Mistral (Francia), Qwen e DeepSeek (Cina), Kimi K2 visto prima. In Italia: Minerva (Sapienza), Velvet (Almawave), Italia (iGenius). Di solito sono qualche mese indietro rispetto ai migliori chiusi.
+  Per un'azienda: dati sensibili (sanità, legale, progetti) → un modello aperto in casa; prototipo veloce → uno chiuso.
+  "Aperto" di solito vuol dire open-weight: si scaricano i pesi, ma non i dati né la ricetta completa. Le licenze possono avere limiti d'uso.
+  Collegamento con "Quanto sono large?": i più grandi aperti richiedono decine di GPU; quelli piccoli (pochi miliardi di pesi) girano su un buon PC.
 ]
 
 #slide(title: [Le imprese italiane e l'AI])[
@@ -744,7 +838,7 @@
 #split-slide("images/student.jpg", title: [E l'università?], side: right, ratio: 40%, credit: [Gary Todd, CC0])[
   #v(0.2em)
   #senses(
-    [*Un tutor personale per tutti*: disponibile alle 2 di notte, al ritmo di ciascuno.],
+    [*Un tutor personale per tutti*: sempre disponibile, al ritmo di ciascuno.],
     [*Ricerca più veloce*: AlphaFold, Nobel per la Chimica 2024.],
     [*Gli studenti come ponte* verso le aziende: portano le competenze dove servono.],
   )
@@ -848,9 +942,11 @@
   Esempio concreto per "chi risponde": un'auto autonoma che sbaglia, una diagnosi suggerita dall'AI.
 ]
 
+/*
 #statement-slide(dark: true, kicker: [Per chiudere], size: 2.6em)[
   Cosa scegliamo di continuare a fare *con la nostra testa*?
-]
+]*/
+
 #speaker-note[
   Ricapitolo in tre frasi: capire è comprimere, e le macchine ora lo fanno su scala enorme.
   Il valore per noi è nella competenza, non nel modello.
