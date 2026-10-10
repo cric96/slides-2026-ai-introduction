@@ -24,7 +24,8 @@
   .meta a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 3px }
   .meta a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px }
   main { display: grid; gap: 1.25rem }
-  main img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; border: 1px solid var(--line); border-radius: 4px; background: var(--line) }
+  main img { display: block; justify-self: center; width: min(100%, calc((100svh - 2rem) * 16 / 9)); height: auto; aspect-ratio: 16 / 9; border: 1px solid var(--line); border-radius: 4px; background: var(--line) }
+  @media (prefers-reduced-motion: no-preference) { :root { scroll-behavior: smooth } }
 </style>
 <div class="wrap">
   <header>
@@ -34,9 +35,27 @@
       <span>Gianluca Aguzzi · Università di Bologna · DISI · 2026</span>
       <a href="https://gianluca.aguzzi.dev/slides-2026-ai-introduction/presentation-2026-ai-chatbot-innovazione.pdf">Scarica il PDF</a>
       <a href="https://github.com/cric96/slides-2026-ai-introduction">Sorgenti</a>
+      <span>← → per sfogliare</span>
     </p>
   </header>
   <main>
 <!--slides-->
   </main>
 </div>
+<script>
+  // ← → (and PageUp/PageDown, sent by presentation clickers) jump to the previous/next slide.
+  const slides = [...document.querySelectorAll("main img")];
+  const step = { ArrowRight: 1, PageDown: 1, ArrowLeft: -1, PageUp: -1 };
+  addEventListener("keydown", e => {
+    const d = step[e.key];
+    if (!d || e.altKey || e.ctrlKey || e.metaKey) return;
+    const mid = innerHeight / 2;
+    const offset = img => { const r = img.getBoundingClientRect(); return r.top + r.height / 2 - mid; };
+    const cur = slides.reduce((best, img, i) => Math.abs(offset(img)) < Math.abs(offset(slides[best])) ? i : best, 0);
+    // The closest slide is not centred yet in the direction of travel: go to it first.
+    const target = offset(slides[cur]) * d > 2 ? cur : cur + d;
+    const next = slides[Math.min(Math.max(target, 0), slides.length - 1)];
+    e.preventDefault();
+    next.scrollIntoView({ block: "center" });
+  });
+</script>
