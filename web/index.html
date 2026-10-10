@@ -8,8 +8,12 @@
   :root { --bg: #121317; color-scheme: dark }
   html, body { height: 100%; margin: 0; background: var(--bg) }
   main { height: 100%; display: grid; place-items: center; cursor: pointer; user-select: none }
-  main img { grid-area: 1 / 1; width: 100%; height: 100%; object-fit: contain }
-  main img[hidden] { display: none }
+  main img { grid-area: 1 / 1; width: 100%; height: 100%; object-fit: contain; opacity: 0 }
+  /* The new page fades in over the old one, which stays opaque underneath: unchanged parts of a #pause step do not flicker. */
+  main img.prev { opacity: 1 }
+  main img.on { opacity: 1; z-index: 1; animation: fade-in .3s ease-out }
+  @keyframes fade-in { from { opacity: 0 } }
+  @media (prefers-reduced-motion: reduce) { main img.on { animation: none } }
 </style>
 <main>
 <!--slides-->
@@ -20,8 +24,12 @@
   const step = { ArrowRight: 1, PageDown: 1, ArrowLeft: -1, PageUp: -1 };
   let cur = 0;
   const go = d => {
-    cur = Math.min(Math.max(cur + d, 0), slides.length - 1);
-    slides.forEach((img, i) => img.hidden = i !== cur);
+    const next = Math.min(Math.max(cur + d, 0), slides.length - 1);
+    if (next === cur) return;
+    slides.forEach(img => img.className = "");
+    slides[cur].className = "prev";
+    slides[next].className = "on";
+    cur = next;
   };
   addEventListener("keydown", e => {
     const d = step[e.key];
@@ -30,5 +38,5 @@
     go(d);
   });
   document.querySelector("main").addEventListener("click", e => go(e.clientX > innerWidth / 2 ? 1 : -1));
-  go(0);
+  slides[0].className = "on";
 </script>
